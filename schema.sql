@@ -40,7 +40,7 @@ create index idx_blog_posts_updated_at on blog_posts (updated_at);
 
 -- fetch content
 create table content_queue (
-                               id serial primary key,
+                               id bigserial primary key,
                                payload text not null,
                                enqueued_at timestamp not null default current_timestamp,
                                locked_until timestamp,
@@ -48,11 +48,12 @@ create table content_queue (
                                status text not null default 'waiting' -- waiting, processing, done, failed
 );
 
+
 create index idx_content_queue_enqueued_at on content_queue (enqueued_at);
 
 -- fetch related profiles
 create table profile_queue (
-                               id serial primary key,
+                               id bigserial primary key,
                                payload text not null,
                                enqueued_at timestamp not null default current_timestamp,
                                locked_until timestamp,
@@ -64,7 +65,7 @@ create index idx_profile_queue_enqueued_at on profile_queue (enqueued_at);
 
 -- fetch user data
 create table user_queue (
-                            id serial primary key,
+                            id bigserial primary key,
                             payload text not null,
                             enqueued_at timestamp not null default current_timestamp,
                             locked_until timestamp,

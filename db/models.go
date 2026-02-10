@@ -9,50 +9,50 @@ import (
 )
 
 type BlogPost struct {
-	BlogPlatform string
-	PostUrl      string
-	Path         string
-	PublishedAt  pgtype.Timestamp
-	CreatedAt    pgtype.Timestamp
-	UpdatedAt    pgtype.Timestamp
+	BlogPlatform string           `json:"blog_platform"`
+	PostUrl      string           `json:"post_url"`
+	Path         string           `json:"path"`
+	PublishedAt  pgtype.Timestamp `json:"published_at"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
 }
 
 type BlogUser struct {
-	BlogPlatform   string
-	UserID         string
-	LastEnqueuedAt pgtype.Timestamp
-	CreatedAt      pgtype.Timestamp
+	BlogPlatform   string           `json:"blog_platform"`
+	UserID         string           `json:"user_id"`
+	LastEnqueuedAt pgtype.Timestamp `json:"last_enqueued_at"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
 }
 
 type ContentQueue struct {
-	ID          int32
-	Payload     string
-	EnqueuedAt  pgtype.Timestamp
-	LockedUntil pgtype.Timestamp
-	Attempts    int32
-	Status      string
+	ID          int64            `json:"id"`
+	Payload     string           `json:"payload"`
+	EnqueuedAt  pgtype.Timestamp `json:"enqueued_at"`
+	LockedUntil pgtype.Timestamp `json:"locked_until"`
+	Attempts    int32            `json:"attempts"`
+	Status      string           `json:"status"`
 }
 
 type Link struct {
-	Url            string
-	LastEnqueuedAt pgtype.Timestamp
-	CreatedAt      pgtype.Timestamp
+	Url            string           `json:"url"`
+	LastEnqueuedAt pgtype.Timestamp `json:"last_enqueued_at"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
 }
 
 type ProfileQueue struct {
-	ID          int32
-	Payload     string
-	EnqueuedAt  pgtype.Timestamp
-	LockedUntil pgtype.Timestamp
-	Attempts    int32
-	Status      string
+	ID          int64            `json:"id"`
+	Payload     string           `json:"payload"`
+	EnqueuedAt  pgtype.Timestamp `json:"enqueued_at"`
+	LockedUntil pgtype.Timestamp `json:"locked_until"`
+	Attempts    int32            `json:"attempts"`
+	Status      string           `json:"status"`
 }
 
 type UserQueue struct {
-	ID          int32
-	Payload     string
-	EnqueuedAt  pgtype.Timestamp
-	LockedUntil pgtype.Timestamp
-	Attempts    int32
-	Status      string
+	ID          int64            `json:"id"`
+	Payload     string           `json:"payload"`
+	EnqueuedAt  pgtype.Timestamp `json:"enqueued_at"`
+	LockedUntil pgtype.Timestamp `json:"locked_until"`
+	Attempts    int32            `json:"attempts"`
+	Status      string           `json:"status"`
 }

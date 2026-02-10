@@ -9,24 +9,47 @@ import (
 	"context"
 )
 
-const enqueueContentItem = `-- name: EnqueueContentItem :one
-INSERT INTO content_queue (payload)
-VALUES ($1)
-RETURNING id, payload, enqueued_at, locked_until, attempts, status
+const deleteContentQueueItems = `-- name: DeleteContentQueueItems :execrows
+DELETE FROM content_queue
+WHERE id = ANY($1::bigint[]) AND status = 'processing'
 `
 
-func (q *Queries) EnqueueContentItem(ctx context.Context, payload string) (ContentQueue, error) {
-	row := q.db.QueryRow(ctx, enqueueContentItem, payload)
-	var i ContentQueue
-	err := row.Scan(
-		&i.ID,
-		&i.Payload,
-		&i.EnqueuedAt,
-		&i.LockedUntil,
-		&i.Attempts,
-		&i.Status,
-	)
-	return i, err
+func (q *Queries) DeleteContentQueueItems(ctx context.Context, arr []int64) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteContentQueueItems, arr)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const deleteProfileQueueItems = `-- name: DeleteProfileQueueItems :execrows
+
+DELETE FROM profile_queue
+WHERE id = ANY($1::bigint[]) AND status = 'processing'
+`
+
+// ensure only processing items are deleted
+func (q *Queries) DeleteProfileQueueItems(ctx context.Context, arr []int64) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteProfileQueueItems, arr)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const deleteUserQueueItems = `-- name: DeleteUserQueueItems :execrows
+
+DELETE FROM user_queue
+WHERE id = ANY($1::bigint[]) AND status = 'processing'
+`
+
+// ensure only processing items are deleted
+func (q *Queries) DeleteUserQueueItems(ctx context.Context, arr []int64) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteUserQueueItems, arr)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const popContentQueueItems = `-- name: PopContentQueueItems :many
@@ -52,8 +75,8 @@ WHERE q.id = cte.id
 `
 
 type PopContentQueueItemsParams struct {
-	Attempts int32
-	Limit    int32
+	Attempts int32 `json:"attempts"`
+	Limit    int32 `json:"limit"`
 }
 
 func (q *Queries) PopContentQueueItems(ctx context.Context, arg PopContentQueueItemsParams) ([]ContentQueue, error) {
@@ -106,8 +129,8 @@ WHERE q.id = cte.id
 `
 
 type PopProfileQueueItemsParams struct {
-	Attempts int32
-	Limit    int32
+	Attempts int32 `json:"attempts"`
+	Limit    int32 `json:"limit"`
 }
 
 func (q *Queries) PopProfileQueueItems(ctx context.Context, arg PopProfileQueueItemsParams) ([]ProfileQueue, error) {
@@ -160,8 +183,8 @@ WHERE q.id = cte.id
 `
 
 type PopUserQueueItemsParams struct {
-	Attempts int32
-	Limit    int32
+	Attempts int32 `json:"attempts"`
+	Limit    int32 `json:"limit"`
 }
 
 func (q *Queries) PopUserQueueItems(ctx context.Context, arg PopUserQueueItemsParams) ([]UserQueue, error) {

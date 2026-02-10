@@ -61,7 +61,29 @@ FROM cte
 WHERE q.id = cte.id
     RETURNING q.*;
 
--- name: EnqueueContentItem :one
+-- name: EnqueueContentItems :copyfrom
 INSERT INTO content_queue (payload)
-VALUES ($1)
-RETURNING *;
+VALUES
+    ($1);
+
+-- name: EnqueueProfileItems :copyfrom
+INSERT INTO profile_queue (payload)
+VALUES
+    ($1);
+
+-- name: EnqueueUserItems :copyfrom
+INSERT INTO user_queue (payload)
+VALUES
+    ($1);
+
+-- name: DeleteContentQueueItems :execrows
+DELETE FROM content_queue
+WHERE id = ANY(@arr::bigint[]) AND status = 'processing'; -- ensure only processing items are deleted
+
+-- name: DeleteProfileQueueItems :execrows
+DELETE FROM profile_queue
+WHERE id = ANY(@arr::bigint[]) AND status = 'processing'; -- ensure only processing items are deleted
+
+-- name: DeleteUserQueueItems :execrows
+DELETE FROM user_queue
+WHERE id = ANY(@arr::bigint[]) AND status = 'processing'; -- ensure only processing items are deleted
